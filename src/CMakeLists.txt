@@ -11,9 +11,10 @@ project(
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-include(cxx-install-targets)
+# include(cxx-install-targets)
 include(add_cxx_module)
 include(add_cxx_executable)
 
+add_subdirectory(core)
 add_subdirectory(http)
 add_subdirectory(cli)
