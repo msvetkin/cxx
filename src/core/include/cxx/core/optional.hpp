@@ -33,7 +33,10 @@ class PromiseReturn {
 
   ~PromiseReturn() = default;
 
-  operator std::optional<T>() & noexcept {
+  // C++20 works
+  // operator std::optional<T>() & noexcept {
+  // C++23 gcc requires
+  operator std::optional<T>() noexcept {
     return std::move(storage_);
   }
 
@@ -72,8 +75,11 @@ struct Promise {
 };
 
 template <typename T>
-struct Awaitable {
-  std::optional<T> optional_;
+class Awaitable {
+ public:
+  explicit Awaitable(std::optional<T> optional)
+      : optional_(std::move(optional)) {
+  }
 
   bool await_ready() const noexcept {
     return optional_.has_value();
@@ -87,6 +93,9 @@ struct Awaitable {
   void await_suspend(std::coroutine_handle<Promise<U>> h) const {
     h.destroy();
   }
+
+ private:
+  std::optional<T> optional_;
 };
 
 }  // namespace _optional
@@ -101,5 +110,5 @@ struct std::coroutine_traits<std::optional<T>, Args...> {
 template <typename T>
 cxx::core::_optional::Awaitable<T> operator co_await(
     std::optional<T> o) noexcept {
-  return {std::move(o)};
+  return cxx::core::_optional::Awaitable<T>{std::move(o)};
 }
