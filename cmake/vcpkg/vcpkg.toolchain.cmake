@@ -24,7 +24,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/vcpkg_bootstrap.cmake)
 vcpkg_bootstrap(
   CACHE_DIR_NAME cxx
   REPO https://github.com/microsoft/vcpkg.git
-  REF 9edb1b8e590cc086563301d735cae4b6e732d2d2 # release 2023.08.09
+  REF c8696863d371ab7f46e213d8f5ca923c4aef2a00 # release 2023.12.12
 )
 
 file(SHA512 "${CMAKE_SOURCE_DIR}/vcpkg.json" vcpkg_manifest_hash)

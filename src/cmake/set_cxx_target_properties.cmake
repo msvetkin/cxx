@@ -3,9 +3,10 @@
 
 include_guard(GLOBAL)
 
-find_package(fmt CONFIG REQUIRED)
-find_package(Microsoft.GSL CONFIG REQUIRED)
-find_package(range-v3 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED GLOBAL)
+find_package(Microsoft.GSL CONFIG REQUIRED GLOBAL)
+find_package(range-v3 CONFIG REQUIRED GLOBAL)
+find_package(tl-expected CONFIG REQUIRED GLOBAL)
 
 # sets default target properties
 function(set_cxx_target_properties target type)
@@ -17,17 +18,20 @@ function(set_cxx_target_properties target type)
       VISIBILITY_INLINES_HIDDEN ON
   )
 
+  target_compile_options(${target}
+    ${type}
+      $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>
+  )
+
+  target_link_options(${target}
+    ${type}
+      $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++ -lc++abi>
+  )
+
   if (NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     target_compile_options(${target} ${type}
       $<$<CXX_COMPILER_ID:MSVC>:/W4>
       $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
     )
   endif()
-
-  target_link_libraries(${target}
-    ${type}
-      fmt::fmt
-      range-v3::range-v3
-      Microsoft.GSL::GSL
-  )
 endfunction()
