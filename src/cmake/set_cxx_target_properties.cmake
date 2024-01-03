@@ -6,6 +6,7 @@ include_guard(GLOBAL)
 find_package(fmt CONFIG REQUIRED GLOBAL)
 find_package(Microsoft.GSL CONFIG REQUIRED GLOBAL)
 find_package(range-v3 CONFIG REQUIRED GLOBAL)
+find_package(tl-expected CONFIG REQUIRED GLOBAL)
 
 # sets default target properties
 function(set_cxx_target_properties target type)

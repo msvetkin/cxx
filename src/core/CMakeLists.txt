@@ -11,5 +11,6 @@ target_sources(${cxx_module_target}
 
 target_link_libraries(${cxx_module_target}
   INTERFACE
+    tl::expected
     fmt::fmt
 )
