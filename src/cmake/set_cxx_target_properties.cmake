@@ -3,9 +3,9 @@
 
 include_guard(GLOBAL)
 
-find_package(fmt CONFIG REQUIRED)
-find_package(Microsoft.GSL CONFIG REQUIRED)
-find_package(range-v3 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED GLOBAL)
+find_package(Microsoft.GSL CONFIG REQUIRED GLOBAL)
+find_package(range-v3 CONFIG REQUIRED GLOBAL)
 
 # sets default target properties
 function(set_cxx_target_properties target type)
@@ -23,11 +23,4 @@ function(set_cxx_target_properties target type)
       $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
     )
   endif()
-
-  target_link_libraries(${target}
-    ${type}
-      fmt::fmt
-      range-v3::range-v3
-      Microsoft.GSL::GSL
-  )
 endfunction()

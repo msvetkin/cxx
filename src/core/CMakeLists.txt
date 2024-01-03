@@ -8,3 +8,8 @@ target_sources(${cxx_module_target}
     include/cxx/core/coroutine.hpp
     include/cxx/core/optional.hpp
 )
+
+target_link_libraries(${cxx_module_target}
+  INTERFACE
+    fmt::fmt
+)

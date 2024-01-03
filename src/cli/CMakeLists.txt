@@ -7,5 +7,6 @@ target_sources(${cxx_executable_target} PRIVATE src/main.cpp)
 
 target_link_libraries(${cxx_executable_target}
   PRIVATE
+    cxx::core
     cxx::http
 )

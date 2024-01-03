@@ -6,10 +6,22 @@
 #include "cxx/core/coroutine.hpp"
 
 #include <exception>
-#include <expected>
+#include <tl/expected.hpp>
 #include <type_traits>
+#include <utility>
 
 namespace cxx::core {
+
+template <typename T, typename Error>
+using expected = tl::expected<T, Error>;
+
+template <typename Error>
+using unexpected = tl::unexpected<Error>;
+
+template <typename Error>
+unexpected<std::decay_t<Error>> make_unexpected(Error &&error) {
+  return tl::make_unexpected(std::forward<Error>(error));
+}
 
 namespace _expected {
 
@@ -17,7 +29,7 @@ template <typename T>
 struct isUnexpected : std::false_type {};
 
 template <typename T>
-struct isUnexpected<std::unexpected<T>> : std::true_type {};
+struct isUnexpected<unexpected<T>> : std::true_type {};
 
 template <typename T, typename Error>
 struct Promise;
@@ -40,12 +52,12 @@ class PromiseReturn {
 
   ~PromiseReturn() = default;
 
-  operator std::expected<T, Error>() noexcept {
+  operator expected<T, Error>() noexcept {
     return std::move(storage_);
   }
 
  private:
-  std::expected<T, Error> storage_;
+  expected<T, Error> storage_;
   Promise<T, Error> *promise_{};
 };
 
@@ -79,13 +91,13 @@ struct Promise {
     std::terminate();
   }
 
-  std::expected<T, Error> *value_{};
+  expected<T, Error> *value_{};
 };
 
 template <typename T, typename Error>
 class Awaitable {
  public:
-  explicit Awaitable(std::expected<T, Error> expected)
+  explicit Awaitable(expected<T, Error> expected)
       : expected_(std::move(expected)) {
   }
 
@@ -99,12 +111,12 @@ class Awaitable {
 
   template <typename U>
   void await_suspend(std::coroutine_handle<Promise<U, Error>> h) const {
-    *h.promise().value_ = std::unexpected(std::move(expected_.error()));
+    *h.promise().value_ = unexpected<Error>(std::move(expected_.error()));
     h.destroy();
   }
 
  private:
-  std::expected<T, Error> expected_;
+  expected<T, Error> expected_;
 };
 
 }  // namespace _expected
@@ -112,11 +124,11 @@ class Awaitable {
 }  // namespace cxx::core
 
 template <typename T, typename Error, typename... Args>
-struct std::coroutine_traits<std::expected<T, Error>, Args...> {
+struct std::coroutine_traits<cxx::core::expected<T, Error>, Args...> {
   using promise_type = cxx::core::_expected::Promise<T, Error>;
 };
 
 template <typename T, typename Error>
-auto operator co_await(std::expected<T, Error> expected) noexcept {
+auto operator co_await(cxx::core::expected<T, Error> expected) noexcept {
   return cxx::core::_expected::Awaitable{std::move(expected)};
 }
