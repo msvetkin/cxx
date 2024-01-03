@@ -20,6 +20,7 @@ TEST_CASE("co_await, nullopt") {
     steps.push_back(2);
     co_await v;
     steps.push_back(3);
+    co_return 10;
   };
 
   const auto v = getValue();

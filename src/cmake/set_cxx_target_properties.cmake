@@ -18,6 +18,16 @@ function(set_cxx_target_properties target type)
       VISIBILITY_INLINES_HIDDEN ON
   )
 
+  target_compile_options(${target}
+    ${type}
+      $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>
+  )
+
+  target_link_options(${target}
+    ${type}
+      $<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++ -lc++abi>
+  )
+
   if (NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     target_compile_options(${target} ${type}
       $<$<CXX_COMPILER_ID:MSVC>:/W4>
